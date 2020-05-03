@@ -19,8 +19,7 @@ const style = theme => ({
         '&:hover': {
             backgroundColor: 'transparent'
         }
-    }
-    
+    } 
 });
 
 export default style;

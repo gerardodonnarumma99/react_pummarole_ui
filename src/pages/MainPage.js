@@ -3,19 +3,23 @@ import Header from "./../components/Header";
 import { withRouter } from "react-router-dom";
 
 class MainPage extends React.Component {
+
   render () {
-    const { children } = this.props;
+    const { children } = this.props;
+
+    console.log(children);
 
     return (
-      <main>
-        <Header />
-        <div style={{
-          padding: 20
-        }}>
-          {children}
-        </div>
-      </main>
-        
+        <main>
+          <Header />
+          <div style={{
+            padding: 20
+          }}>
+
+            {children}
+
+          </div>
+        </main>
     )
   }
 }

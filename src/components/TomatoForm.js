@@ -1,30 +1,78 @@
 import React from "react";
-import { Paper, TextField, Grid, withStyles } from "@material-ui/core";
+import { Paper, TextField, Grid, Typography, withStyles } from "@material-ui/core";
 import style from "./TomatoFormStyle";
+import { getLastTimer, getLastTomato } from "../service/Api";
+import FormActive from './FormActive';
 
 class TomatoForm extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            lastTomato: [],
+            lastTimer: []
+        };
+    }
+
+    async componentDidMount () {
+        const tomato = await getLastTomato(this.props.userId);
+        const timer = await getLastTimer(this.props.userId);
+        this.setState({lastTomato: tomato, lastTimer: timer});
+    }
 
     render () {
-        const { hiddenForm, inProgress, titleValue, descriptionValue, lastTitle, lastDescription, handleTitle, handleDescription, classes } = this.props;
-        
-        return (
-            <Paper 
-                elevation={3} 
-                className={classes.paper}
-            >
+        const { 
+            activeTimerTomato, activeTimerPause, titleValue, descriptionValue, handleTitle, handleDescription, classes } = this.props;
+        const { lastTomato, lastTimer } = this.state;
 
-                <form className={classes.root} noValidate autoComplete="off">
-                    <Grid container direction="col" justify="center" alignItems="center" spacing={1}>
-                        <Grid item xs={12} sm={12} md={12}>
-                            <TextField label="Title" value={titleValue} placeholder={lastTitle==null ? "Title of the task" : "Previous: "+lastTitle} onChange={handleTitle}/>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12}>
-                            <TextField variant="outlined" className={classes.description} multiline rowsMax={4} value={descriptionValue} label="Description" placeholder={lastDescription==null ? "Description of the task" : "Previous: "+lastDescription} onChange={handleDescription}/>
-                        </Grid>
-                    </Grid>
-                </form>
-                
-            </Paper>
+        return (
+            <React.Fragment>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Typography className={classes.label}>
+                        {activeTimerTomato||activeTimerTomato ? "Tomato task in progress" : "Tomato task to perform"}
+                    </Typography>
+                </Grid>
+                <Paper 
+                    elevation={3}
+                    className={classes.paper}
+                >
+                    {activeTimerTomato==true ? 
+                        (<FormActive labelTitle = {titleValue} labelDescription = {descriptionValue} />)
+                    : activeTimerPause==true ? 
+                        (<FormActive labelTitle = {Boolean(lastTomato) ? lastTomato.title : ''} labelDescription = {Boolean(lastTomato) ? lastTomato.description : ''} />)
+                    : (
+                        <form className={classes.root} noValidate autoComplete="off">
+                            <Grid 
+                                container 
+                                spacing={1}>
+                                <Grid item xs={12} sm={12} md={12}>
+                                    <TextField 
+                                        label="Title" 
+                                        variant="outlined" 
+                                        value={titleValue} 
+                                        fullWidth
+                                        placeholder={lastTomato ? `Previous: ${lastTomato.title}` : "Title of the task"} 
+                                        onChange={handleTitle}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12}>
+                                    <TextField 
+                                        fullWidth
+                                        variant="outlined"
+                                        multiline
+                                        rowsMax={4} 
+                                        rows={3}
+                                        value={descriptionValue} 
+                                        label="Description" 
+                                        placeholder={lastTomato ? `Previous: ${lastTomato.description}` : "Description of the task"}
+                                        onChange={handleDescription} 
+                                    />
+                                </Grid>
+                            </Grid>
+                        </form>
+                    ) }
+                </Paper>
+            </React.Fragment>
         );
     }
 }

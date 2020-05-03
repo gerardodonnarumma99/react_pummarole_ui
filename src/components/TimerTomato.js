@@ -5,7 +5,7 @@ import styleTomato from "./TimerTomatoStyle";
 class TimerTomato extends React.Component {
 
     render () {
-        const { select, label, timer, iconPlay, iconBroken, classes } = this.props;
+        const { select, label, timer, iconPlay, iconBroken, iconCycle, classes } = this.props;
 
         return (
             <Paper 
@@ -19,11 +19,14 @@ class TimerTomato extends React.Component {
                     {timer}
                 </Typography>
                 <Grid container direction="row" justify="center" alignItems="center" spacing={1}>
-                    <Grid item xs={6} sm={6} md={6} >
+                    <Grid item xs={3} sm={3} md={4} >
                         {iconPlay}
                     </Grid>
-                    <Grid item xs={6} sm={6} md={6}>
+                    <Grid item xs={3} sm={3} md={4}>
                         {iconBroken}
+                    </Grid>
+                    <Grid item xs={3} sm={3} md={4}>
+                        {iconCycle}
                     </Grid>
                 </Grid>
             </Paper>
