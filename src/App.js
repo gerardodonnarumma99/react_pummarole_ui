@@ -30,8 +30,6 @@ class App extends React.Component {
   }
 
   responseLoginGoogle = (response) => {
-    const auth2 = window.gapi.auth2.getAuthInstance();
-    auth2.signIn();
     const profil = JSON.stringify(response.profileObj);
     localStorage.setItem('timetoes_user', profil);
     this.redirect();

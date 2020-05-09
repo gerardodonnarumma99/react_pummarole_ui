@@ -2,7 +2,6 @@ import React from 'react';
 import { IconButton, Popover, Grid, ListItem, ListItemText } from "@material-ui/core";
 import { withRouter } from 'react-router';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import GoogleLogout from 'react-google-login';
 
 class UserInfo extends React.Component {
 
@@ -23,11 +22,15 @@ class UserInfo extends React.Component {
     }
 
     logout = () => {
-        localStorage.clear();
-       /*TODO if( typeof window.gapi.auth2.getAuthInstance() != 'undefined' ) {
-            window.gapi.auth2.getAuthInstance().disconnect();
-        } */
-        this.props.history.push('/login');
+        try{
+            if( typeof( window.gapi.auth2.getAuthInstance() ) != 'undefined' ) {
+                window.gapi.auth2.getAuthInstance().disconnect();
+            } 
+        } catch(err) {}
+        finally {
+            localStorage.removeItem('timetoes_user');
+            this.props.history.push('/login');
+        }
     }
 
     render() {

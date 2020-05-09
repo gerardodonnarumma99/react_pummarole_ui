@@ -59,6 +59,8 @@ class Dashboard extends React.Component {
                 });
             }
 
+            this.setSeconds(result);
+
             this.setState({ tasks: result, 
                 timeProductive: totalProductive.format('HH:mm:ss'),
                 timeBroken: totalBroken.format('HH:mm:ss'),
@@ -73,6 +75,18 @@ class Dashboard extends React.Component {
             window.EventBus.dispatchEvent(REMOVE_LOAD);
         }
 
+    }
+
+    //Per problemi di ritardo con l'API, setto i secondi a 0
+    setSeconds(tasks) {
+        if(!Boolean(tasks)) {
+            return;
+        }
+        tasks.map( item => {
+            if( item.status != 'broken' ) {
+                item.duration=item.duration.substr(0,3)+item.duration.substr(3,3)+"00";
+            }
+        });
     }
 
     handleDateChange = async (date) => {

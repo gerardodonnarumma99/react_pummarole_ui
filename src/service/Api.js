@@ -119,7 +119,7 @@ const getNextTimer = async(idUser) => {
         const result=await axios.get(`${TOMATOS_API}/nextTimer/${idUser}`);
         return result.data[0];
     } catch(error) {
-        window.EventBus.dispatchEvent(SHOW_MESSAGE, { severity: 'error', message: "Connessione con il server fallita!" });
+        throw new Error();
     }
 }
 

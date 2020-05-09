@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Paper, TextField, Container, withStyles, Button, Select, MenuItem} from "@material-ui/core";
+import { Grid, Paper, TextField, Container, withStyles, Button, Select, MenuItem, Tooltip} from "@material-ui/core";
 import style from "./../components/TomatoesStyle";
 import TimerPause from "./../components/TimerPause";
 import TimerTomato from "./../components/TimerTomato";
@@ -88,24 +88,29 @@ class Tomatoes extends React.Component {
     }
 
     async componentDidUpdate() {
-        const nextTimer = await getNextTimer(this.state.userId);
-
-        switch (this.state.status) {
-            case 'doing': 
-                    this.startTimer(this.state.startTimer); 
-                    Boolean(nextTimer) ?
-                    window.EventBus.dispatchEvent(SHOW_NEXT_TIMER, { severity: 'info', message: `Next timer: ${nextTimer.duration} min ${nextTimer.type}`, timer: this.state.startTimer })
-                    : window.EventBus.dispatchEvent(SHOW_NEXT_TIMER, { severity: 'info', message: 'Al momento non abbiamo suggerimenti per te!' });
-                break;
-            case 'done': 
-                    this.putTimer(this.state.status); 
-                    window.EventBus.dispatchEvent(REMOVE_NEXT_TIMER);
-                    await this.pomodoroCycle();
-                break;
-            case 'broken': 
-                    window.EventBus.dispatchEvent(REMOVE_NEXT_TIMER);
-                    this.putTimer(this.state.status); 
-                break;
+        var nextTimer=null;
+        try {
+            nextTimer = await getNextTimer(this.state.userId);
+            switch (this.state.status) {
+                case 'doing': 
+                        this.startTimer(this.state.startTimer); 
+                        Boolean(nextTimer) ?
+                        window.EventBus.dispatchEvent(SHOW_NEXT_TIMER, { severity: 'info', message: `Next timer: ${nextTimer.duration} min ${nextTimer.type}`, timer: this.state.startTimer })
+                        : window.EventBus.dispatchEvent(SHOW_NEXT_TIMER, { severity: 'info', message: 'Al momento non abbiamo suggerimenti per te!' });
+                    break;
+                case 'done': 
+                        this.putTimer(this.state.status); 
+                        window.EventBus.dispatchEvent(REMOVE_NEXT_TIMER);
+                        await this.pomodoroCycle();
+                    break;
+                case 'broken': 
+                        window.EventBus.dispatchEvent(REMOVE_NEXT_TIMER);
+                        this.putTimer(this.state.status); 
+                    break;
+            }
+        }
+        catch(err){
+            window.EventBus.dispatchEvent(SHOW_MESSAGE, { severity: 'error', message: "Connessione con il server fallita!" });
         }
     }
 
@@ -117,13 +122,14 @@ class Tomatoes extends React.Component {
             
             if(diffDate >= timer.duration * 60) {
                 console.log("QUI");
-                this.setState({idTimer: timer.id, startDate: timer.start_date, startTimer: timer.duration, status: 'done'});
+                this.setState({idTimer: timer.id, startDate: timer.start_date, startTimer: timer.duration*60, status: 'done'});
             } else {
                 const diffDateSeconds = (timer.duration * 60) - diffDate;
                 this.setState({ 
                     idTimer: timer.id, 
                     status: 'doing', 
-                    startTimer: diffDateSeconds, 
+                    startTimer: diffDateSeconds,
+                    startDate: timer.start_date,
                     type: timer.type,
                     titleValue: timer.title,
                     descriptionValue: timer.description
@@ -171,7 +177,7 @@ class Tomatoes extends React.Component {
         const cyclePomo = await getPomodoroCycle(this.state.userId);
 
         if(cyclePomo) {
-            window.EventBus.dispatchEvent(SHOW_MESSAGE, { severity: 'success', message: 'Complimenti... Hai completato un ciclo di pomodoro!' });
+            window.EventBus.dispatchEvent(SHOW_MESSAGE, { severity: 'success', message: 'Congratulations... You have finished a tomato cycle!' });
         }
 
         this.setState({ cycle: cyclePomo ? true : false });
@@ -312,7 +318,8 @@ class Tomatoes extends React.Component {
                                     </Button>
                                 }
                                 iconCycle={
-                                    <Button color="primary" 
+                                    <Tooltip title="Start new cycle">
+                                    <IconButton color="primary" aria-label="add an alarm" 
                                         onClick={ async (e) => {
                                             await this.setState({ 
                                                 tomatoSelected: {
@@ -325,14 +332,15 @@ class Tomatoes extends React.Component {
                                             }
                                         }
                                         disabled={this.state.timerPause.isRunning()||this.state.timerTomato.isRunning()}>
-                                        New Cycle
-                                    </Button>
+                                        <AlarmIcon className={classes.iconCycle}/>
+                                    </IconButton>
+                                    </Tooltip>
                                 }
                                 />
                         </Grid>
                         <Grid item xs={12} sm={12} md={3}>
                             <TomatoForm 
-                                idUser={state.idUser}
+                                userId={state.userId}
                                 activeTimerTomato={state.timerTomato.isRunning()}
                                 activeTimerPause={state.timerPause.isRunning()}
                                 titleValue={state.titleValue} 
