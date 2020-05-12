@@ -11,7 +11,6 @@ import moment from "moment";
 import { getLastTimer, getTimerType, postTimer, putTimer, getNextTimer, getPomodoroCycle } from "./../service/Api";
 import { SHOW_MESSAGE, SHOW_NEXT_TIMER, REMOVE_NEXT_TIMER } from './../components/AlertCustomized';
 import AlertCustomized from "./../components/AlertCustomized";
-import NotifyBrowser from './../components/NotifyBrowser';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import IconButton from '@material-ui/core/IconButton';
 import BackDropCustomized from "./../components/BackDropCustomized";
@@ -35,8 +34,6 @@ class Tomatoes extends React.Component {
             startTimer: 0,
             selectPause: [],
             selectTomato: [],
-            //timerSelected: '',
-            //idTimerSelected: 0,
             idTimer: 0,
             status: '',
             titleValue: '',
@@ -271,7 +268,6 @@ class Tomatoes extends React.Component {
             <React.Fragment >
                 <BackDropCustomized />
                 <AlertCustomized />
-                <NotifyBrowser />
                 <Container maxWidth="lg">
                     <Grid container direction="row" justify="center" alignItems="center" spacing={1}>
                         <Grid item xs={12} sm={12} md={3}>

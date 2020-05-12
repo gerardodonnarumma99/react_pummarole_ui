@@ -18,7 +18,7 @@ class BackDropCustomized extends React.Component {
     }
 
     componentDidMount() {
-        window.EventBus = new EventBus();
+        
         window.EventBus.addEventListener(LOAD, e => this.showLoader());
         window.EventBus.addEventListener(REMOVE_LOAD, e => this.removeLoader());
     }

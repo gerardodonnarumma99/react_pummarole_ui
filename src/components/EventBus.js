@@ -1,4 +1,4 @@
-export default class EventBus  {
+class EventBus  {
     constructor () {
       this.bus = document.createElement('fakeelement');
     }
@@ -15,3 +15,5 @@ export default class EventBus  {
       this.bus.dispatchEvent(new CustomEvent(event, { detail }));
     }
 }
+
+export default window.EventBus = new EventBus();
